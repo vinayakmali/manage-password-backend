@@ -13,8 +13,38 @@ The repository is the code to one of my article on **Dev.to**, [Laravel 8 CRUD A
 8. php artisan migrate
 9. php artisan serve (if the server opens up, http://127.0.0.1:8000,  then we are good to go)
 ![localhost](https://res.cloudinary.com/kingsconsult/image/upload/v1600705305/laravel%208%20modal/4_pp7r76.png)
-10. Navigate to http://127.0.0.1:8000/projects
-![CRUD](https://res.cloudinary.com/kingsconsult/image/upload/v1602364575/crud_llekuf.png)
+10. Navigate to http://127.0.0.1:8000/login
+
+##Project Details
+
+This Laravel assignment having two main components as below
+
+1. Business
+
+In this buiness module business owner can quickly singup and publish the business on the portal in 4 steps. Quick signup steps as belows
+
+• Enter business name http://127.0.0.1:8000/business/create
+
+• Select the business type
+
+• Select business action
+
+• Enter email id
+
+On signup verification email will be sent to the business owner.
+
+Business owner can edit the business info like business type, business action and the working hours as required.
+
+On the publishing the business the unique URL will be generated for each business.
+
+2. User
+
+User can send the enquiry to the business owner by clicking on the business action button also can select the timings which is suitable for the user.
+
+To send enquiry user need to provide the name, email, email.
+
+The business owner ad the user will receive the copy of enquiry on emai
+
 
 ## Operations
 1. Create a project
