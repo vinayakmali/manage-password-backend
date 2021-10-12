@@ -11,7 +11,8 @@ class VerifyCsrfToken extends Middleware
      *
      * @var array
      */
-    protected $except = [
+     protected $except = [
         //
+        'http://127.0.0.1:8000/getpassword' //This is the url that I dont want Csrf for postman.
     ];
 }

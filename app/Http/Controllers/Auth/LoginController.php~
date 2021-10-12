@@ -24,9 +24,7 @@ class LoginController extends Controller
         $credentials = $request->only('email', 'password');
 
         if (Auth::attempt($credentials)) {
-        	
-        	return redirect('/home');
-					//return redirect()->intended('/business/create');
+            return redirect()->intended('/business/create');
         }
 
         return redirect('login')->with('error', 'Oppes! You have entered invalid credentials');
@@ -41,10 +39,6 @@ class LoginController extends Controller
     public function home()
     {
 
-    	if (Auth::check()) {
-    		return view('home');
-    	} else {
-    		return redirect('login');
-    	}
+      return view('home');
     }
 }

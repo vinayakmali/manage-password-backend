@@ -9,6 +9,7 @@ use App\Http\Controllers\Auth\ResetPasswordController;
 use App\Http\Controllers\ManagepasswordController;
 use App\Http\Controllers\ManageuserController;
 
+use Auth;
 
 /*
 |--------------------------------------------------------------------------
@@ -35,7 +36,6 @@ Route::resource('managepassword', ManagepasswordController::class);
 Route::resource('manageuser', ManageuserController::class);
 
 Route::get('/logout', '\App\Http\Controllers\Auth\LoginController@logout');
-Route::post('getpassword', [ManagepasswordController::class, 'getPassword']);
 
 Auth::routes();
 //Auth::routes(['verify' => true]);
@@ -54,4 +54,3 @@ Route::post('forget-password', [ForgotPasswordController::class, 'postEmail']);
 
 Route::get('reset-password/{token}', [ResetPasswordController::class, 'getPassword']);
 Route::post('reset-password', [ResetPasswordController::class, 'updatePassword']);
-
