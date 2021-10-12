@@ -21,7 +21,6 @@
     <table class="table table-bordered table-responsive-lg">
         <tr>
             <th>S.No</th>
-            <th>User ID</th>
             <th>Name</th>
             <th>Email</th>
             <th>Date Created</th>
@@ -32,7 +31,6 @@
         
             <tr>
                 <td>{{ ++$i }}</td>
-                <td>{{ $users->id }}</td>
                 <td>{{ $users->name }}</td>
                 <td>{{ $users->email }}</td>
                 <td>{{ date('d-m-Y', strtotime($users->created_at)) }}</td>
