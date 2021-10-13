@@ -6,7 +6,7 @@
 5. cp .env.example .env
 6. php artisan key:generate
 7. Add your database config in the .env file (you can check my articles on how to achieve that)
-8. Import the laravel.sql file
+8. Import the assignment.sql file
 9. php artisan migrate
 10. php artisan serve (if the server opens up, http://127.0.0.1:8000,  then we are good to go)
 11. Navigate to http://127.0.0.1:8000/login
