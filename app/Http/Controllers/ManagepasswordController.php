@@ -71,11 +71,12 @@ class ManagepasswordController extends Controller
 
 			//Managepassword::create($request->all());
 			
+		$encrypted = $this->cryptoJsAesEncrypt("fasl76$customecrypt#india@ipl2021", $request->password);
 			
 			DB::table('manage_password')->insert([
 					'login_url' => $request->login_url,
 					'username' => $request->username,
-					'password' => $request->password,
+					'password' => $encrypted,
 					'userids' => implode(",",$request->userids),
 					'created_at' => date('Y-m-d H:i:s')
 			]);
@@ -172,12 +173,14 @@ class ManagepasswordController extends Controller
 				]);
 				
 				
+					$encrypted = $this->cryptoJsAesEncrypt("fasl76$customecrypt#india@ipl2021", $request->password);
+	
 				$affected = DB::table('manage_password')
               ->where('id', $Managepassword->id)
               ->update([
 							'login_url' => $request->login_url,
 							'username' => $request->username,
-							'password' => $request->password,
+							'password' => $encrypted,
 							'userids' => implode(",",$request->userids)
 				]);
               
@@ -217,6 +220,7 @@ if (empty($data['email'])) {
 	$count = 0;
 }else{
 	$count = count($result);
+	$result[0]->password = $this->cryptoJsAesDecrypt("customecrypt#india@ipl2021",$result[0]->password); 
 	$success = 1;
 }
 
@@ -226,6 +230,41 @@ return response()->json([
         'success' => $success 
     ], 201);
 
+}
+
+
+function cryptoJsAesEncrypt($passphrase, $value){
+    $salt = openssl_random_pseudo_bytes(8);
+    $salted = '';
+    $dx = '';
+    while (strlen($salted) < 48) {
+        $dx = md5($dx.$passphrase.$salt, true);
+        $salted .= $dx;
+    }
+    $key = substr($salted, 0, 32);
+    $iv  = substr($salted, 32,16);
+    $encrypted_data = openssl_encrypt(json_encode($value), 'aes-256-cbc', $key, true, $iv);
+    $data = array("ct" => base64_encode($encrypted_data), "iv" => bin2hex($iv), "s" => bin2hex($salt));
+    return json_encode($data);
+}
+
+
+function cryptoJsAesDecrypt($passphrase, $jsonString){
+    $jsondata = json_decode($jsonString, true);
+    $salt = hex2bin($jsondata["s"]);
+    $ct = base64_decode($jsondata["ct"]);
+    $iv  = hex2bin($jsondata["iv"]);
+    $concatedPassphrase = $passphrase.$salt;
+    $md5 = array();
+    $md5[0] = md5($concatedPassphrase, true);
+    $result = $md5[0];
+    for ($i = 1; $i < 3; $i++) {
+        $md5[$i] = md5($md5[$i - 1].$concatedPassphrase, true);
+        $result .= $md5[$i];
+    }
+    $key = substr($result, 0, 32);
+    $data = openssl_decrypt($ct, 'aes-256-cbc', $key, true, $iv);
+    return json_decode($data, true);
 }
 	
 }
