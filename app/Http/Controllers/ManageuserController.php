@@ -3,7 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Models\Manageuser;
+use App\Models\User;
 use Illuminate\Http\Request;
+use Hash;
 
 use Auth;
 use DB;
@@ -22,7 +24,7 @@ class ManageuserController extends Controller
 			if (Auth::check()) {
 				
 				$Manageuser = Manageuser::latest()->where("external_user", 1)->paginate(5);
-
+				
 				return view('Manageuser.index', compact('Manageuser'))
 					->with('i', (request()->input('page', 1) - 1) * 5);
 					  
@@ -82,16 +84,23 @@ class ManageuserController extends Controller
 			
 
 			//Managepassword::create($request->all());
-			
-			DB::table('users')->insert([
-					'name' => $request->name,
-					'email' => $request->email,
-					'password' => md5('1Externaluser@23'),
-					'external_user' => 1,
-					'created_at' => date('Y-m-d H:i:s')
-					
-			]);
-			
+			$user = User::where('email', '=', $request->email)->first();
+
+			// echo '<pre>';
+			// print_r($user)
+			if(!empty($user)){
+				$user->external_user=1;
+				$user->save();
+			} else {
+				$user = new User();
+				$user->name=$request->name;
+				$user->email=$request->email;
+				$user->password=Hash::make('1Externaluser@23');
+				$user->external_user=1;
+				$user->save();
+
+			}
+
 			return redirect()->route('manageuser.index')
 					->with('success', 'Record created successfully.');
 					

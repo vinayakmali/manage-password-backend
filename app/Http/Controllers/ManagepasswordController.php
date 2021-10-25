@@ -71,12 +71,12 @@ class ManagepasswordController extends Controller
 
 			//Managepassword::create($request->all());
 			
-		$encrypted = $this->cryptoJsAesEncrypt("fasl76$customecrypt#india@ipl2021", $request->password);
-			
+		$encrypted = $this->cryptoJsAesEncrypt("fasl76customecrypt#india@ipl2021", $request->password);
+			$encoded_data = base64_encode($encrypted);
 			DB::table('manage_password')->insert([
 					'login_url' => $request->login_url,
 					'username' => $request->username,
-					'password' => $encrypted,
+					'password' => $encoded_data,
 					'userids' => implode(",",$request->userids),
 					'created_at' => date('Y-m-d H:i:s')
 			]);
@@ -173,14 +173,16 @@ class ManagepasswordController extends Controller
 				]);
 				
 				
-					$encrypted = $this->cryptoJsAesEncrypt("fasl76$customecrypt#india@ipl2021", $request->password);
+					$encrypted = $this->cryptoJsAesEncrypt("fasl76customecrypt#india@ipl2021", $request->password);
 	
+					$encoded_data = base64_encode($encrypted);
+
 				$affected = DB::table('manage_password')
               ->where('id', $Managepassword->id)
               ->update([
 							'login_url' => $request->login_url,
 							'username' => $request->username,
-							'password' => $encrypted,
+							'password' => $encoded_data,
 							'userids' => implode(",",$request->userids)
 				]);
               
@@ -199,38 +201,47 @@ class ManagepasswordController extends Controller
 
 	public function getPassword(Request $request){
 
-$data = $request->post();
+		// print_r($request->email);
+		// print_r($request->login_url);die;
+		 //print_r($request->email);die;
 
-if (!empty($data['email']) && !empty($data['login_url'])) {
-	$result = DB::select("select m.username,m.password from manage_password as m inner join users as u on u.id in (m.userids) where u.email = '".  $data['email']  ."' and m.login_url = '".  $data['login_url']  ."' limit 0,1;
-	");
-}
+		// $data = $request->post();
+		if (!empty($request->email) && !empty($request->login_url)) {
+			// $result = DB::select("select m.username,m.password from manage_password as m inner join users as u on u.id in (m.userids) where u.email = '". $request->email ."' and m.login_url like '%". $request->login_url ."%' limit 0,1;");
+			// print_r($result);
+			// die;
+		}
+		if (empty($request->email)) {
+			$result = "Error!! Email Id is empty";
+			$success = 0;
+			$count = 0;
+		}else if (empty($request->login_url)) {
+			$result = "Error!! Login Url is empty";
+			$success = 0;
+			$count = 0;
+		}else {
+			$result = DB::select("select m.username,m.password from manage_password as m inner join users as u on u.id in (m.userids) where u.email = '". $request->email ."' and m.login_url like '%". $request->login_url ."%' limit 0,1;");
 
-if (empty($data['email'])) {
-	$result = "Error!! Email Id is empty";
-	$success = 0;
-	$count = 0;
-}elseif (empty($data['login_url'])) {
-	$result = "Error!! Login Url is empty";
-	$success = 0;
-	$count = 0;
-}elseif (count($result) == 0) {
-	$result = "No data found";
-	$success = 1;
-	$count = 0;
-}else{
-	$count = count($result);
-	$result[0]->password = $this->cryptoJsAesDecrypt("customecrypt#india@ipl2021",$result[0]->password); 
-	$success = 1;
-}
+			$count = count($result);
 
-return response()->json([
-        "result" => $result,
-        "count" => $count,
-        'success' => $success 
-    ], 201);
+			if ($count == 0) {
+				$result = "No data found";
+				$success = 1;
+				$count = 0;
+			}else{			
+			$result[0]->password = 	base64_decode($result[0]->password);
+			 $result[0]->password = $this->cryptoJsAesDecrypt("fasl76customecrypt#india@ipl2021",$result[0]->password); 
+				$success = 1;
+			}
+		}
 
-}
+		return response()->json([
+			"result" => $result,
+			"count" => $count,
+			'success' => $success 
+		], 201);
+
+	}
 
 
 function cryptoJsAesEncrypt($passphrase, $value){
@@ -265,6 +276,16 @@ function cryptoJsAesDecrypt($passphrase, $jsonString){
     $key = substr($result, 0, 32);
     $data = openssl_decrypt($ct, 'aes-256-cbc', $key, true, $iv);
     return json_decode($data, true);
+}
+
+function get_domain($url)
+{
+  $pieces = parse_url($url);
+  $domain = isset($pieces['host']) ? $pieces['host'] : $pieces['path'];
+  if (preg_match('/(?P<domain>[a-z0-9][a-z0-9\-]{1,63}\.[a-z\.]{2,6})$/i', $domain, $regs)) {
+    return $regs['domain'];
+  }
+  return $url;
 }
 	
 }

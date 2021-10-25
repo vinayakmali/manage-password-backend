@@ -22,8 +22,7 @@
         <tr>
             <th>S.No</th>
             <th>Login URL</th>
-            <th>username</th>
-            <th>userids</th>
+            <th>Assigned Users</th>
             <th>Date Created</th>
             <th width="280px">Action</th>
         </tr>
@@ -33,8 +32,7 @@
             <tr>
                 <td>{{ ++$i }}</td>
                 <td>{{ $manage->login_url }}</td>
-                <td>{{ $manage->username }}</td>
-                <td>{{ $manage->userids }}</td>
+                <td>{{ getUsername($manage->userids) }}</td>
                 <td>{{ date('d-m-Y', strtotime($manage->created_at)) }}</td>
                 <td>
                     <form action="{{ route('managepassword.destroy', $manage->id) }}" method="POST">
@@ -68,6 +66,10 @@
     	.text-sm {
     		margin-top: 15px;
     	}
+        .flex.items-center.justify-between .hidden{
+            text-align: center;
+
+        }
     </style>
     
    {!! $Managepassword->links() !!}
